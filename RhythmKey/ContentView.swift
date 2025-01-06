@@ -17,6 +17,8 @@ struct ContentView: View {
     @State private var selectedNote: String? = nil
     @State private var dragOffset: CGFloat = 0
     @State private var previousTranslation: CGFloat = 0
+    @State private var isMinorMode: Bool = false
+    @Namespace private var animation
     
     // Music keys enum
     enum MusicKey: String, CaseIterable {
@@ -49,10 +51,26 @@ struct ContentView: View {
     }
     
     struct KeyGrid {
-        static func generateKeys(selectedNote: String?) -> [KeyLabel] {
+        static func generateKeys(selectedNote: String?, isMinor: Bool) -> [KeyLabel] {
             let notes = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"]
             
-            let relatedNotes: [String: [String]] = [
+            // Define related notes for both major and minor keys
+            let relatedNotes: [String: [String]] = isMinor ? [
+                // Minor keys relationships
+                "C": ["C", "D", "D♯", "F", "G", "G♯", "A♯"],  // C minor
+                "C♯": ["C♯", "D♯", "E", "F♯", "G♯", "A", "B"],
+                "D": ["D", "E", "F", "G", "A", "A♯", "C"],
+                "D♯": ["D♯", "F", "F♯", "G♯", "A♯", "B", "C♯"],
+                "E": ["E", "F♯", "G", "A", "B", "C", "D"],
+                "F": ["F", "G", "G♯", "A♯", "C", "C♯", "D♯"],
+                "F♯": ["F♯", "G♯", "A", "B", "C♯", "D", "E"],
+                "G": ["G", "A", "A♯", "C", "D", "D♯", "F"],
+                "G♯": ["G♯", "A♯", "B", "C♯", "D♯", "E", "F♯"],
+                "A": ["A", "B", "C", "D", "E", "F", "G"],
+                "A♯": ["A♯", "C", "C♯", "D♯", "F", "F♯", "G♯"],
+                "B": ["B", "C♯", "D", "E", "F♯", "G", "A"]
+            ] : [
+                // Existing major keys relationships
                 "C": ["C", "D", "E", "F", "G", "A", "B"],
                 "C♯": ["C♯", "D♯", "F", "F♯", "G♯", "A♯"],
                 "D": ["D", "E", "F", "G", "A", "B", "C"],
@@ -157,18 +175,77 @@ struct ContentView: View {
                 
                 // Key Grid
                 VStack(spacing: min(12, geometry.size.height * 0.015)) {
-                    Text("Match Key")
-                        .font(.system(size: max(11, min(20, geometry.size.width * 0.05))))
-                        .foregroundColor(.secondary)
+                    HStack {
+                        Text("Match Key")
+                            .font(.system(size: max(11, min(20, geometry.size.width * 0.05))))
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        // Major/Minor toggle buttons - This part keeps its animation
+                        HStack(spacing: 0) {
+                            // Major button
+                            Button(action: { 
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    isMinorMode = false 
+                                }
+                            }) {
+                                Text("Major")
+                                    .font(.system(size: max(11, min(16, geometry.size.width * 0.04))))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        ZStack {
+                                            if !isMinorMode {
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .fill(Color.accentColor)
+                                                    .matchedGeometryEffect(id: "ModeBackground", in: animation)
+                                            }
+                                        }
+                                    )
+                                    .foregroundColor(isMinorMode ? .secondary : .primary)
+                            }
+                            
+                            // Minor button
+                            Button(action: { 
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    isMinorMode = true 
+                                }
+                            }) {
+                                Text("Minor")
+                                    .font(.system(size: max(11, min(16, geometry.size.width * 0.04))))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        ZStack {
+                                            if isMinorMode {
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .fill(Color.accentColor)
+                                                    .matchedGeometryEffect(id: "ModeBackground", in: animation)
+                                            }
+                                        }
+                                    )
+                                    .foregroundColor(isMinorMode ? .primary : .secondary)
+                            }
+                        }
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.secondary.opacity(0.2))
+                        )
+                    }
                     
+                    // Wrap the LazyVGrid in a non-animated container
+                    let keys = KeyGrid.generateKeys(selectedNote: selectedNote, isMinor: isMinorMode)
                     LazyVGrid(columns: [
                         GridItem(.flexible()),
                         GridItem(.flexible()),
                         GridItem(.flexible()),
                         GridItem(.flexible())
                     ], spacing: min(12, geometry.size.width * 0.03)) {
-                        ForEach(KeyGrid.generateKeys(selectedNote: selectedNote)) { key in
-                            Button(action: { selectedNote = selectedNote == key.note ? nil : key.note }) {
+                        ForEach(keys) { key in
+                            Button(action: { 
+                                selectedNote = selectedNote == key.note ? nil : key.note 
+                            }) {
                                 Text(key.note)
                                     .font(.system(size: max(11, min(20, geometry.size.width * 0.048)), weight: .medium))
                                     .frame(height: max(44, geometry.size.height * 0.055))
@@ -186,6 +263,7 @@ struct ContentView: View {
                             }
                         }
                     }
+                    .animation(nil, value: isMinorMode) // Disable animation for the entire grid
                 }
                 .padding(.horizontal, min(16, geometry.size.width * 0.04))
                 .position(x: geometry.size.width / 2, y: geometry.size.height * 0.82)
