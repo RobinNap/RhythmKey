@@ -21,6 +21,7 @@ struct ContentView: View {
     @Namespace private var animation
     @State private var isVibrating: Bool = false
     @State private var vibrateTimer: Timer?
+    @State private var showingInfo = false
     
     // Music keys enum
     enum MusicKey: String, CaseIterable {
@@ -103,18 +104,34 @@ struct ContentView: View {
                 Color(uiColor: .systemBackground)
                     .edgesIgnoringSafeArea(.all)
                 
-                // Vibration Toggle Button - top right corner
-                Button(action: toggleVibration) {
-                    Image(systemName: isVibrating ? "waveform" : "waveform.slash")
-                        .font(.system(size: max(11, min(20, geometry.size.width * 0.05))))
-                        .foregroundColor(isVibrating ? .accentColor : .secondary)
-                        .padding(12)
+                // Info Button - top left corner
+                Button(action: { showingInfo = true }) {
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 22))
+                        .foregroundColor(.secondary)
+                        .frame(width: 44, height: 44)
                         .background(
                             Circle()
                                 .fill(Color.secondary.opacity(0.2))
                         )
                 }
-                .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.07)
+                .position(x: geometry.size.width * 0.1, y: geometry.size.height * 0.06)
+                .sheet(isPresented: $showingInfo) {
+                    InfoView()
+                }
+                
+                // Vibration Toggle Button - top right corner
+                Button(action: toggleVibration) {
+                    Image(systemName: isVibrating ? "waveform" : "waveform.slash")
+                        .font(.system(size: 22))
+                        .foregroundColor(isVibrating ? .accentColor : .secondary)
+                        .frame(width: 44, height: 44)
+                        .background(
+                            Circle()
+                                .fill(Color.secondary.opacity(0.2))
+                        )
+                }
+                .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.06)
                 
                 // Top Content - BPM Display
                 VStack(spacing: geometry.size.height * 0.02) {
