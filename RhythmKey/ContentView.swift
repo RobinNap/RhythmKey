@@ -19,6 +19,8 @@ struct ContentView: View {
     @State private var previousTranslation: CGFloat = 0
     @State private var isMinorMode: Bool = false
     @Namespace private var animation
+    @State private var isVibrating: Bool = false
+    @State private var vibrateTimer: Timer?
     
     // Music keys enum
     enum MusicKey: String, CaseIterable {
@@ -101,6 +103,19 @@ struct ContentView: View {
                 Color(uiColor: .systemBackground)
                     .edgesIgnoringSafeArea(.all)
                 
+                // Vibration Toggle Button - top right corner
+                Button(action: toggleVibration) {
+                    Image(systemName: isVibrating ? "waveform" : "waveform.slash")
+                        .font(.system(size: max(11, min(20, geometry.size.width * 0.05))))
+                        .foregroundColor(isVibrating ? .accentColor : .secondary)
+                        .padding(12)
+                        .background(
+                            Circle()
+                                .fill(Color.secondary.opacity(0.2))
+                        )
+                }
+                .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.07)
+                
                 // Top Content - BPM Display
                 VStack(spacing: geometry.size.height * 0.02) {
                     Text(String(format: "%.1f", tapEngine.currentBPM))
@@ -118,6 +133,9 @@ struct ContentView: View {
                                     
                                     // Store the current position for next comparison
                                     previousTranslation = gesture.translation.height
+                                    
+                                    // Update vibration timer if active
+                                    updateVibrateTimer()
                                 }
                                 .onEnded { _ in
                                     // Reset tracking variables
@@ -274,6 +292,40 @@ struct ContentView: View {
     
     private func handleTap() {
         tapEngine.tap()
+        updateVibrateTimer()
+    }
+    
+    private func toggleVibration() {
+        isVibrating.toggle()
+        
+        if isVibrating {
+            // Calculate interval in seconds from BPM
+            let interval = 60.0 / tapEngine.currentBPM
+            
+            // Create and store the timer
+            vibrateTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+            }
+        } else {
+            // Stop and clear the timer
+            vibrateTimer?.invalidate()
+            vibrateTimer = nil
+        }
+    }
+    
+    private func updateVibrateTimer() {
+        if isVibrating {
+            // Stop current timer
+            vibrateTimer?.invalidate()
+            
+            // Start new timer with updated interval
+            let interval = 60.0 / tapEngine.currentBPM
+            vibrateTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+            }
+        }
     }
 }
 
