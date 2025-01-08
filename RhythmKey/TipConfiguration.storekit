@@ -1,0 +1,122 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "1F58BFAE",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "D6FE3735",
+      "localizations" : [
+        {
+          "description" : "Support RhythmKey with a fresh croissant",
+          "displayName" : "Fresh Croissant 🥐",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.robinnap.rhythmkey.smalltip",
+      "referenceName" : "Fresh Croissant",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "3.99",
+      "familyShareable" : false,
+      "internalID" : "589A2347",
+      "localizations" : [
+        {
+          "description" : "Support RhythmKey with a croissant and jam",
+          "displayName" : "Croissant & Jam 🥐🍓",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.robinnap.rhythmkey.mediumtip",
+      "referenceName" : "Croissant & Jam",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "5.99",
+      "familyShareable" : false,
+      "internalID" : "F50ED573",
+      "localizations" : [
+        {
+          "description" : "upport RhythmKey with a deluxe breakfast",
+          "displayName" : "Deluxe Breakfast 🥐🥛",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.robinnap.rhythmkey.largetip",
+      "referenceName" : "Deluxe Breakfast",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

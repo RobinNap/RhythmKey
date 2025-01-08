@@ -305,6 +305,9 @@ struct ContentView: View {
             }
             .ignoresSafeArea(.keyboard)
         }
+        .task {
+            await StoreManager.shared.loadProducts()
+        }
     }
     
     private func handleTap() {
