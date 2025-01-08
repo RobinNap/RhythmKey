@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct ContentView: View {
     @StateObject private var tapEngine = TapEngine()
@@ -22,6 +23,8 @@ struct ContentView: View {
     @State private var isVibrating: Bool = false
     @State private var vibrateTimer: Timer?
     @State private var showingInfo = false
+    @AppStorage("keyTapCount") private var keyTapCount = 0
+    @AppStorage("hasRequestedReview") private var hasRequestedReview = false
     
     // Music keys enum
     enum MusicKey: String, CaseIterable {
@@ -279,7 +282,17 @@ struct ContentView: View {
                     ], spacing: min(12, geometry.size.width * 0.03)) {
                         ForEach(keys) { key in
                             Button(action: { 
-                                selectedNote = selectedNote == key.note ? nil : key.note 
+                                selectedNote = selectedNote == key.note ? nil : key.note
+                                
+                                // Increment tap count and check for review prompt
+                                keyTapCount += 1
+                                if keyTapCount >= 10 && !hasRequestedReview {
+                                    hasRequestedReview = true
+                                    Task {
+                                        try? await Task.sleep(nanoseconds: 1_000_000_000) // Wait 1 second
+                                        requestReview()
+                                    }
+                                }
                             }) {
                                 Text(key.note)
                                     .font(.system(size: max(11, min(20, geometry.size.width * 0.048)), weight: .medium))
@@ -346,6 +359,11 @@ struct ContentView: View {
                 generator.impactOccurred()
             }
         }
+    }
+    
+    private func requestReview() {
+        guard let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else { return }
+        SKStoreReviewController.requestReview(in: scene)
     }
 }
 
